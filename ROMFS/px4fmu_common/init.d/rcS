@@ -453,6 +453,10 @@ else
 	navigator start
 
 	#
+	# Start HoverGames State Machine
+	hovergames_sm start
+
+	#
 	# Start a thermal calibration if required.
 	#
 	. ${R}etc/init.d/rc.thermal_cal

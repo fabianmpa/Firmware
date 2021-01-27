@@ -48,12 +48,60 @@ LidarLiteI2C::LidarLiteI2C(I2CSPIBusOption bus_option, const int bus, const uint
 	_px4_rangefinder(get_device_id(), orientation)
 {
 	_px4_rangefinder.set_min_distance(LL40LS_MIN_DISTANCE);
-	_px4_rangefinder.set_max_distance(LL40LS_MAX_DISTANCE);
+	_px4_rangefinder.set_max_distance(LL40LS_MAX_DISTANCE_V2);
 	_px4_rangefinder.set_fov(0.008); // Divergence 8 mRadian
 	// up the retries since the device misses the first measure attempts
 	_retries = 3;
+<<<<<<< HEAD
 
 	_px4_rangefinder.set_device_type(DRV_DIST_DEVTYPE_LL40LS); /// TODO
+=======
+	initialize_filters();
+
+}
+
+void LidarLiteI2C::initialize_filters()
+{
+	/*Initialize first filter weight values*/
+	b(16)  = 0.300f;
+	b(15)  = 0.100f;
+	b(14)  = 0.040f;
+	b(13)  = 0.040f;
+	b(12)  = 0.040f;
+	b(11)  = 0.040f;
+        b(10)  = 0.040f;
+	b(9)   = 0.040f;
+	b(8)   = 0.040f;
+	b(7)   = 0.040f;
+	b(6)   = 0.040f;
+	b(5)   = 0.040f;
+        b(4)   = 0.040f;
+	b(3)   = 0.040f;
+	b(2)   = 0.040f;
+	b(1)   = 0.040f;
+	b(0)   = 0.040f;
+	/*Initialize second filter weight values*/
+	b1(16) = 0.500f;
+	b1(15) = 0.200f;
+	b1(14) = 0.020f;
+	b1(13) = 0.020f;
+	b1(12) = 0.020f;
+	b1(11) = 0.020f;
+        b1(10) = 0.020f;
+	b1(9)  = 0.020f;
+	b1(8)  = 0.020f;
+	b1(7)  = 0.020f;
+	b1(6)  = 0.020f;
+	b1(5)  = 0.020f;
+        b1(4)  = 0.020f;
+	b1(3)  = 0.020f;
+	b1(2)  = 0.020f;
+	b1(1)  = 0.020f;
+	b1(0)  = 0.020f;
+	/*Give filters an initial value equal to the first reading (offset of the height from the development place table )*/
+	filter.new_sample(b,19.0F);
+	filter_cascade.new_sample(b1,filter.get_result());
+>>>>>>> Hovargames2: add message and mavlink message handling.
 }
 
 LidarLiteI2C::~LidarLiteI2C()
@@ -291,7 +339,6 @@ LidarLiteI2C::collect()
 {
 	// read from the sensor
 	uint8_t val[2] {};
-
 	perf_begin(_sample_perf);
 
 	// read the high and low byte distance registers
@@ -323,7 +370,13 @@ LidarLiteI2C::collect()
 	}
 
 	uint16_t distance_cm = (val[0] << 8) | val[1];
-	const float distance_m = float(distance_cm) * 1e-2f;
+	const float distance_m = ((float)(distance_cm)) * 1e-2f;
+	/*Firsr filter call*/
+	filter.new_sample(b,distance_m);
+	/*Second filter call (cascade )*/
+	filter_cascade.new_sample(b1,filter.get_result());
+	/*Result value to the new distance filtered variable*/
+	const float distance_filtered = filter_cascade.get_result();
 
 	if (distance_cm == 0) {
 		_zero_counter++;
@@ -432,7 +485,7 @@ LidarLiteI2C::collect()
 		}
 	}
 
-	_px4_rangefinder.update(timestamp_sample, distance_m, signal_quality);
+	_px4_rangefinder.update(timestamp_sample, distance_filtered, signal_quality);
 
 	perf_end(_sample_perf);
 	return OK;

@@ -55,6 +55,15 @@
 #include <uORB/Subscription.hpp>
 #include <uORB/SubscriptionMultiArray.hpp>
 #include <uORB/topics/vehicle_status.h>
+<<<<<<< HEAD
+=======
+#include <uORB/topics/vehicle_status_flags.h>
+#include <uORB/topics/vtol_vehicle_status.h>
+#include <uORB/topics/hovergames.h>
+
+using matrix::Vector3f;
+using matrix::wrap_2pi;
+>>>>>>> Hovargames2: add message and mavlink message handling.
 
 #include "streams/ACTUATOR_CONTROL_TARGET.hpp"
 #include "streams/ACTUATOR_OUTPUT_STATUS.hpp"
@@ -111,6 +120,7 @@
 #include "streams/VFR_HUD.hpp"
 #include "streams/VIBRATION.hpp"
 #include "streams/WIND_COV.hpp"
+#include "streams/HOVERGAMES_STATUS.hpp"
 
 #if !defined(CONSTRAINED_FLASH)
 # include "streams/ADSB_VEHICLE.hpp"
@@ -535,8 +545,11 @@ static const StreamListItem streams_list[] = {
 	create_stream_list_item<MavlinkStreamComponentInformation>(),
 #endif // COMPONENT_INFORMATION_HPP
 #if defined(RAW_RPM_HPP)
-	create_stream_list_item<MavlinkStreamRawRpm>()
+	create_stream_list_item<MavlinkStreamRawRpm>(),
 #endif // RAW_RPM_HPP
+#if defined(HOVERGAMES_STATUS_HPP)
+	create_stream_list_item<MavlinkStreamHoverGames>()
+#endif
 };
 
 const char *get_stream_name(const uint16_t msg_id)

@@ -49,6 +49,7 @@
 #include <drivers/device/device.h>
 #include <lib/drivers/rangefinder/PX4Rangefinder.hpp>
 #include <perf/perf_counter.h>
+#include "filter.hpp"
 
 using namespace time_literals;
 
@@ -148,6 +149,7 @@ private:
 
 	int collect();
 
+	void initialize_filters();
 	/**
 	 * LidarLite specific transfer function. This is needed
 	 * to avoid a stop transition with SCL high
@@ -188,4 +190,8 @@ private:
 	perf_counter_t _sample_perf{perf_alloc(PC_ELAPSED, "ll40ls: read")};
 	perf_counter_t _sensor_resets{perf_alloc(PC_COUNT, "ll40ls: resets")};
 	perf_counter_t _sensor_zero_resets{perf_alloc(PC_COUNT, "ll40ls: zero resets")};
+	matrix::Vector<float,17U> b;
+	matrix::Vector<float,17U> b1;
+	fpfilter filter;
+	fpfilter filter_cascade;
 };

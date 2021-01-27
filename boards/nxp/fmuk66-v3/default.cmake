@@ -85,6 +85,7 @@ px4_add_board(
 		#uuv_pos_control
 		vmount
 		vtol_att_control
+		hovergames_sm
 	SYSTEMCMDS
 		#bl_update
 		#dmesg
