@@ -93,6 +93,7 @@
 #include <uORB/topics/vehicle_status.h>
 #include <uORB/topics/vehicle_status_flags.h>
 #include <uORB/topics/vtol_vehicle_status.h>
+#include <uORB/topics/hovergames.h>
 
 using matrix::Vector3f;
 using matrix::wrap_2pi;
@@ -131,6 +132,7 @@ using matrix::wrap_2pi;
 #include "streams/STORAGE_INFORMATION.hpp"
 #include "streams/TRAJECTORY_REPRESENTATION_WAYPOINTS.hpp"
 #include "streams/WIND_COV.hpp"
+#include "streams/HOVERGAMES_STATUS.hpp"
 
 #if !defined(CONSTRAINED_FLASH)
 # include "streams/DEBUG.hpp"
@@ -3139,8 +3141,11 @@ static const StreamListItem streams_list[] = {
 	create_stream_list_item<MavlinkStreamStorageInformation>(),
 #endif // STORAGE_INFORMATION_HPP
 #if defined(RAW_RPM_HPP)
-	create_stream_list_item<MavlinkStreamRawRpm>()
+	create_stream_list_item<MavlinkStreamRawRpm>(),
 #endif // RAW_RPM_HPP
+#if defined(HOVERGAMES_STATUS_HPP)
+	create_stream_list_item<MavlinkStreamHoverGames>()
+#endif
 };
 
 const char *get_stream_name(const uint16_t msg_id)

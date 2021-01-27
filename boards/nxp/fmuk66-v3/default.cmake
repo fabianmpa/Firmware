@@ -81,6 +81,7 @@ px4_add_board(
 		temperature_compensation
 		vmount
 		vtol_att_control
+		hovergames_sm
 	SYSTEMCMDS
 		bl_update
 		#dmesg
